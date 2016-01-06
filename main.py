@@ -98,9 +98,15 @@ for propiedad in urlpropiedades:
 			except:
 				linea += ';'
 			#nombre
-			linea += str(data.find('p',class_='operation-contact-name').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			try:
+				linea += str(data.find('p',class_='operation-contact-name').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
 			#direccion
-			linea += str(data.find('p',class_='operation-owner-address').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			try:
+				linea += str(data.find('p',class_='operation-owner-address').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
 
 			#arriendo o venta
 			linea += str(data.find('div',class_='property-title').ol.find_all('li')[1].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'

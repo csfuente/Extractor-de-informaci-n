@@ -9,7 +9,8 @@ arrovent = ['arriendo','venta']
 #arrovent = ['arriendo']
 #tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
 tipo = ['terreno-en-construccion']
-ciudad = ['metropolitana']
+#ciudad = ['metropolitana']
+ciudad = ['arica-y-parinacota','atacama','biobio']
 url = 'http://www.portalinmobiliario.com/arriendo/casa/santiago-metropolitana'
 urlbase = 'http://www.portalinmobiliario.com'
 
@@ -44,7 +45,7 @@ for propiedad in propiedades:
 	urlpropiedades += [str(propiedad).split('href="')[1].split('"')[0].replace('amp;','')]
 
 archivo = open('data.csv','w')
-archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo')
+archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo;region;url')
 
 page = 1
 loop=True
@@ -127,7 +128,13 @@ for propiedad in urlpropiedades:
 			linea += str(data.find('div',class_='property-title').ol.find_all('li')[1].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
 
 			#tipo
-			linea += str(data.find('div',class_='property-title').ol.find_all('li')[2].get_text().encode('utf-8')).replace(';',',').replace('\n',' ')
+			linea += str(data.find('div',class_='property-title').ol.find_all('li')[2].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+
+			#region
+			linea += str(data.find('div',class_='property-title').ol.find_all('li')[3].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+
+			#url
+			linea += urlbase + propiedad
 
 			archivo.write(linea)
 

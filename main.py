@@ -62,21 +62,36 @@ for propiedad in urlpropiedades:
 		else:
 			linea = ''
 			#Nombre
-			linea += str(data.find('h4',class_='media-block-title').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') +';'
+			try:
+				linea += str(data.find('h4',class_='media-block-title').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') +';'
+			except:
+				linea += ';'
 
 			#Precio $ y UF
-			linea += str(data.find('p',class_='price').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
-			linea += str(data.find('p',class_='price-ref').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			try:
+				linea += str(data.find('p',class_='price').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
+			try:
+				linea += str(data.find('p',class_='price-ref').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
 
 			#Codigo interno
-			linea += str(data.find('p',class_='operation-internal-code').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			try:
+				linea += str(data.find('p',class_='operation-internal-code').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
 
 			#Direccion
-			linea += str(data.find('div',class_='data-sheet-column-address').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			try:
+				linea += str(data.find('div',class_='data-sheet-column-address').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
 
 			#Superficie
 			try:
-				linea += str(data.find('div',class_='data-sheet-column-area').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+				linea += str(data.find('div',class_='data-sheet-column-area').get_text().encode('utf-8')).replace(';',',').replace('\n',' ').replace('Superficie ','') + ';'
 			except:
 				linea += ';'
 

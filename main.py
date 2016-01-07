@@ -7,14 +7,14 @@ propiedades = []
 urlpropiedades = []
 arrovent = ['arriendo','venta']
 #arrovent = ['arriendo']
-#tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
-tipo = ['terreno-en-construccion']
+tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
+#tipo = ['terreno-en-construccion']
 #ciudad = ['metropolitana']
 ciudad = ['arica-y-parinacota','atacama','biobio']
 url = 'http://www.portalinmobiliario.com/arriendo/casa/santiago-metropolitana'
 urlbase = 'http://www.portalinmobiliario.com'
 
-print "Descargando informacion"
+print "Descargando lista de propiedades"
 
 for arriendoventa in arrovent:
 	for tip in tipo:

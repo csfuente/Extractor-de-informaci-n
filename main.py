@@ -1,16 +1,22 @@
+# -*- coding: utf-8 -*-
 import urllib, urllib2
 from bs4 import BeautifulSoup
 
 loop = True
 page = 1
 propiedades = []
+destacados = []
 urlpropiedades = []
-arrovent = ['arriendo','venta']
+urldestacados = []
+#arrovent = ['arriendo','venta']
 #arrovent = ['arriendo']
+arrovent = ['venta']
 tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
 #tipo = ['terreno-en-construccion']
+tipo = ['departamento']
 #ciudad = ['metropolitana']
-ciudad = ['arica-y-parinacota','atacama','biobio']
+#ciudad = ['arica-y-parinacota','atacama','biobio']
+ciudad = ['arica-y-parinacota']
 url = 'http://www.portalinmobiliario.com/arriendo/casa/santiago-metropolitana'
 urlbase = 'http://www.portalinmobiliario.com'
 
@@ -20,6 +26,7 @@ for arriendoventa in arrovent:
 	for tip in tipo:
 		for lugar in ciudad:
 			while(loop):
+				cont = 0
 				try:
 					datos = urllib.urlencode({'ca':'3','ts':'1','mn':'2','or':'','sf':'0','sp':'0','at':'0','pg':str(page)})
 					print "Descargando desde " + urlbase + '/' + arriendoventa + '/'+ tip + '/'+ lugar + '?' + datos
@@ -27,10 +34,14 @@ for arriendoventa in arrovent:
 					data = web.read()
 					web.close()
 					data = BeautifulSoup(data,'html.parser')
-					propiedades += data.find_all('div',class_='propiedad')
+					#propiedades += data.find_all('div',class_='propiedad')
+					#cont += len(data.find_all('div',class_='propiedad'))
+					destacados  += data.find_all('div',class_='proyecto')
+					cont += len(data.find_all('div',class_='proyecto'))
 					page = page + 1
-					print 'Agregados ' + str(len(data.find_all('div',class_='propiedad'))) + ' datos'
-					if len(data.find_all('div',class_='propiedad'))==0:
+					print 'Agregados ' + str(len(data.find_all('div',class_='propiedad'))) + ' propiedades'
+					print 'Agregados ' + str(len(data.find_all('div',class_='pagada'))) + ' proyectos'
+					if cont==0:
 						page = 1
 						loop = False
 				except:
@@ -44,8 +55,11 @@ print ''
 for propiedad in propiedades:
 	urlpropiedades += [str(propiedad).split('href="')[1].split('"')[0].replace('amp;','')]
 
+for destacado in destacados:
+	urldestacados  += [str(destacado).split('href="')[1].split('"')[0].replace('amp;','')]
+
 archivo = open('data.csv','w')
-archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo;region;url')
+archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo;region\n')
 
 page = 1
 loop=True
@@ -56,7 +70,7 @@ for propiedad in urlpropiedades:
 			print 'Procesando propiedad: ' + str(page)
 			web = urllib2.urlopen(urlbase + propiedad,timeout = 5)
 			data = web.read()
-			web.close
+			web.close()
 			data = BeautifulSoup(data,'html.parser')
 		except:
 			print "Problema de Timeout, intentando nuevamente"
@@ -131,14 +145,112 @@ for propiedad in urlpropiedades:
 			linea += str(data.find('div',class_='property-title').ol.find_all('li')[2].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
 
 			#region
-			linea += str(data.find('div',class_='property-title').ol.find_all('li')[3].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			linea += str(data.find('div',class_='property-title').ol.find_all('li')[3].get_text().encode('utf-8')).replace(';',',').replace('\n',' ')
 
 			#url
-			linea += urlbase + propiedad
+			#linea += urlbase + propiedad
 
-			archivo.write(linea)
+			archivo.write(linea+'\n')
 
 			page += 1
 			loop=False
 
+page = 1
+loop = True
+for destacado in urldestacados:
+	loop = True
+	while(loop):
+		try:
+			print 'Procesando proyecto: ' + str(page)
+			web = urllib2.urlopen(urlbase + destacado,timeout = 5)
+			data = web.read()
+			web.close()
+			data = BeautifulSoup(data,'html.parser')
+		except:
+			print "Problema de Timeout, intentando nuevamente"
+		else:
+			linea = ''
+			#Nombre
+			try:
+				linea += str(data.find('div',class_='prj-name').h1.get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
+			print linea
+			#Precio $ y UF
+			try:
+				linea += str(data.find('div',class_='prj-price-range').get_text().encode('utf-8')).replace(';',',').replace('\n',' ').split('   ')[-1] + ';'
+			except:
+				linea += ';'
+			try:
+				#linea += str(data.find('p',class_='price-ref').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+				linea += ';'
+			except:
+				linea += ';'
+			print linea
+
+			#Codigo interno
+			try:
+				linea += str(data.find('span',class_='prj-code').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
+			print linea
+			#Direccion
+			try:
+				linea += str(data.find('p',class_='prj-map-addr-obj').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea += ';'
+			print linea
+			#Superficie
+			try:
+				#linea += str(data.find('span',class_='project-feature-details').get_text().encode('utf-8')).replace(';',',').replace('\n',' ').replace('Superficie ','') + ';'
+				linea += ';'
+			except:
+				linea += ';'
+			print linea
+			#Longitud y latitud
+			try:
+				linea += data.find(attrs={'property':'og:longitude'}).get('content') + ';'
+				linea += data.find(attrs={'property':'og:latitude'}).get('content') + ';'
+				#linea += str(data.find(attrs={'property':'og:longitude'}).get('content').encode('utf.8')).replace(';',',').replace('\n',' ') + ';'
+				#linea += str(data.find(attrs={'property':'og:latitude'}).get('content').encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+			except:
+				linea +=';;'
+			print linea
+			#Descripcion
+			#linea += str(data.find('div',class_='propiedad-descr').get_text().encode('utf-8')).replace(';',',').replace('\n',' ').replace('\n',' ') + ';'
+
+			#Datos de contacto
+			#logo
+			try:
+				#linea += urlbase + str(data.find('div',class_='col-md-3 col-sm-3').img.get('src').encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+				linea += ';'
+			except:
+				linea += ';'
+			#nombre
+			try:
+				linea += str(data.find('div',class_='prj-other-info-items').findAll('div')[1].encode('utf-8')).replace(';',',').replace('\n',' ').replace('Acerca de ','') + ';'
+			except:
+				linea += ';'
+			print linea
+			#direccion
+			try:
+				#linea += str(data.find('p',class_='operation-owner-address').get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+				linea += ';'
+			except:
+				linea += ';'
+			#arriendo o venta
+			linea += str(data.find('div',class_='prj-bcrumbs').find_all('span')[1].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+
+			#tipo
+			linea += str(data.find('div',class_='prj-bcrumbs').find_all('span')[3].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+
+			#region
+			linea += str(data.find('div',class_='prj-bcrumbs').find_all('span')[5].get_text().encode('utf-8')).replace(';',',').replace('\n',' ') + ';'
+
+			archivo.write(linea+'\n')
+
+			page += 1
+			loop=False
+
+	
 archivo.close()

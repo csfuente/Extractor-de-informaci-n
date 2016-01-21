@@ -9,14 +9,15 @@ destacados = []
 urlpropiedades = []
 urldestacados = []
 #arrovent = ['arriendo','venta']
-#arrovent = ['arriendo']
-arrovent = ['venta']
-tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
+arrovent = ['arriendo']
+#arrovent = ['venta']
+#tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
 #tipo = ['terreno-en-construccion']
-tipo = ['departamento']
-#ciudad = ['metropolitana']
+#tipo = ['departamento']
+tipo = ['oficina']
+ciudad = ['metropolitana']
 #ciudad = ['arica-y-parinacota','atacama','biobio']
-ciudad = ['arica-y-parinacota']
+#ciudad = ['arica-y-parinacota']
 url = 'http://www.portalinmobiliario.com/arriendo/casa/santiago-metropolitana'
 urlbase = 'http://www.portalinmobiliario.com'
 
@@ -34,12 +35,12 @@ for arriendoventa in arrovent:
 					data = web.read()
 					web.close()
 					data = BeautifulSoup(data,'html.parser')
-					#propiedades += data.find_all('div',class_='propiedad')
-					#cont += len(data.find_all('div',class_='propiedad'))
-					destacados  += data.find_all('div',class_='proyecto')
+					propiedades += data.find_all('div',class_='propiedad')
+					cont += len(data.find_all('div',class_='propiedad'))
+					#destacados  += data.find_all('div',class_='proyecto')
 					cont += len(data.find_all('div',class_='proyecto'))
 					page = page + 1
-					print 'Agregados ' + str(len(data.find_all('div',class_='propiedad'))) + ' propiedades'
+					#print 'Agregados ' + str(len(data.find_all('div',class_='propiedad'))) + ' propiedades'
 					print 'Agregados ' + str(len(data.find_all('div',class_='pagada'))) + ' proyectos'
 					if cont==0:
 						page = 1
@@ -50,6 +51,7 @@ for arriendoventa in arrovent:
 
 print ''
 print 'Propiedades totales: ' + str(len(propiedades))
+#print 'Propiedades totales: ' + str(len(destacados))
 print ''
 
 for propiedad in propiedades:
@@ -58,7 +60,7 @@ for propiedad in propiedades:
 for destacado in destacados:
 	urldestacados  += [str(destacado).split('href="')[1].split('"')[0].replace('amp;','')]
 
-archivo = open('data.csv','w')
+archivo = open('OficinasArriendo-Santiago.csv','w')
 archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo;region\n')
 
 page = 1

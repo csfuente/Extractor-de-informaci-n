@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import urllib, urllib2
 from bs4 import BeautifulSoup
+import time
+import inspect
+
 
 loop = True
 page = 1
@@ -13,13 +16,15 @@ urldestacados = []
 arrovent = ['venta']
 #tipo = ['casa','departamento','oficina','sitio','comercial','industrial','agricola','loteo','bodega','parcela','estacionamiento','terreno-en-construccion']
 #tipo = ['terreno-en-construccion']
-#tipo = ['departamento']
-tipo = ['casa']
+tipo = ['departamento']
+#tipo = ['casa']
 ciudad = ['metropolitana']
 #ciudad = ['arica-y-parinacota','atacama','biobio']
 #ciudad = ['arica-y-parinacota']
 url = 'http://www.portalinmobiliario.com/arriendo/casa/santiago-metropolitana'
 urlbase = 'http://www.portalinmobiliario.com'
+intentos = 1
+
 
 print "Descargando lista de propiedades"
 
@@ -45,8 +50,12 @@ for arriendoventa in arrovent:
 					if cont==0:
 						page = 1
 						loop = False
+					intentos = 1
+					##time.sleep(5)
 				except:
-					print 'Problemas con URL, intentando nuevamente'
+					print 'Problemas con URL, esperando ' + str(2**intentos)  +' segundos para reintentar'
+					time.sleep(2**intentos)
+					intentos += 1
 			loop = True
 
 print ''
@@ -60,7 +69,7 @@ for propiedad in propiedades:
 for destacado in destacados:
 	urldestacados  += [str(destacado).split('href="')[1].split('"')[0].replace('amp;','')]
 
-archivo = open('CasasVenta-Santiago.csv','w')
+archivo = open(inspect.stack()[0][1].split('.')[0]+'.csv','w')
 archivo.write('Nombre;Precio ($);Precio (UF);Codigo interno;Direccion;Superficie;Longitud;Latitud;Logo contacto;Nombre contacto;Direccion contacto;arriendo o venta;tipo;region\n')
 
 page = 1
@@ -74,8 +83,11 @@ for propiedad in urlpropiedades:
 			data = web.read()
 			web.close()
 			data = BeautifulSoup(data,'html.parser')
+			intentos = 1
 		except:
-			print "Problema de Timeout, intentando nuevamente"
+			print "Problema de Timeout, se intentara en "+ str(2**intentos)  +" segundos"
+			time.sleep(2**intentos)
+			intentos +=1
 		else:
 			linea = ''
 			#Nombre
@@ -156,6 +168,7 @@ for propiedad in urlpropiedades:
 
 			page += 1
 			loop=False
+			#time.sleep(5)
 
 page = 1
 loop = True
